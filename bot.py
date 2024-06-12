@@ -98,5 +98,25 @@ def respawn(message):
                           f"{poi_choice['url']}\n"
                           f"Take a Selfie to Respawn! 📸\n You are safe for 5 minutes after respawn!")
 
+# show points table
+@bot.message_handler(commands=['points', 'table'])
+def points(message):
+    ...
+
+# adds points to player:
+# add 3 points /ap dominik 3
+# add one point /ap dominik
+# TODO: test username autocomplete
+@bot.message_handler(commands=['addpoints', 'ap'])
+def addpoints(message):
+    ...
+
+@bot.message_handler(commands=['removepoints', 'rp'])
+def removepoints(message):
+    ...
+
+@bot.message_handler(commands=['map'])
+def map(message):
+    ...
 
 bot.infinity_polling()
