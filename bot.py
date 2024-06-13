@@ -117,6 +117,12 @@ def removepoints(message):
 
 @bot.message_handler(commands=['map'])
 def map(message):
+    # loop over maps directory
+    # reply map with current_map_level  
+    ...
+
+@bot.message_handler(commands=['permissions'])
+def change_permissions(message):
     ...
 
 bot.infinity_polling()
