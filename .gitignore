@@ -176,3 +176,4 @@ cython_debug/
 
 !/secrets.json
 !/logs/
+!/data/secrets.json
