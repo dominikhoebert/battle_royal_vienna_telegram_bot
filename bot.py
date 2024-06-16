@@ -238,6 +238,8 @@ def change_permissions(message):
 @bot.message_handler(commands=['reset'])
 def reset(message):
     if message.from_user.id == game_master:
+        global scores
+        scores = {}
         global current_map_level
         current_map_level = 1
 
