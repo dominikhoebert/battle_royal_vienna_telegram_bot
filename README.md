@@ -29,4 +29,4 @@ Intended to play a game of "Battle Royal" in Vienna.
 - ~~map: post the map~~
 - timer: try multitasking
 - pois cooldown
-- ~~reset game~~ (pois cooldown, points table)
+- ~~reset game~~ (pois cooldown, ~~points table~~)
