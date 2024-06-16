@@ -7,15 +7,15 @@ import random
 
 logger.add('logs/logs.log', format="{time} {level} {message}", level="INFO", rotation="01:00")
 
-max_map_level = 4
+max_map_level = 5
 current_map_level = 1
 
 permissions = [False, False, False, False, False, False, False, False]
-commands = ['/config', '/poi', '/respawn', '/points', '/addpoints', '/removepoints', '/map', '/permissions']
+commands = ['/config', '/poi', '/respawn', '/score', '/addpoints', '/removepoints', '/map', '/permissions']
 
+scores = {"test": 5}
 
 # timer = []
-
 
 def read_secrets():
     with open('data/secrets.json') as f:
@@ -24,7 +24,7 @@ def read_secrets():
 
 def read_poi():
     pois = {}
-    for i in range(1, max_map_level + 1):
+    for i in range(1, max_map_level):
         pois[i] = []
     reader = csv.DictReader(open('data/poi.csv', 'r', encoding='utf-8'))
     for row in reader:
@@ -48,7 +48,7 @@ def read_maps():
 pois = read_poi()
 maps = read_maps()
 secrets = read_secrets()
-bot = telebot.TeleBot(secrets['bot_token'])
+bot = telebot.TeleBot(secrets['bot_token'], parse_mode='HTML')
 game_master = int(secrets['game_master'])
 logger.info('Bot started')
 
@@ -57,9 +57,9 @@ logger.info('Bot started')
 def send_welcome(message):
     if message.from_user.id == game_master:
         bot.send_message(message.chat.id, "Available commands: /config, /poi, /respawn, "
-                                          "/points, /addpoints, /removepoints, /map, /permissions, /reset")
+                                          "/score, /addpoints, /removepoints, /map, /permissions, /reset")
         logger.info(f"Message send: Available commands: /config, /poi, /respawn, "
-                    "/points, /addpoints, /removepoints, /map, /permissions, /reset")
+                    "/score, /addpoints, /removepoints, /map, /permissions, /reset")
 
 
 @bot.message_handler(commands=['config', 'm'])
@@ -124,16 +124,19 @@ def respawn(message):
 
 
 # show points table
-@bot.message_handler(commands=['points', 'table'])
+@bot.message_handler(commands=['points', 'table', 'score'])
 def points(message):
     if permissions[3] or message.from_user.id == game_master:
-        ...
+        text = "<pre>| Player        | Score |\n|---------------|-------|\n"
+        text += "\n".join([f"| {player.ljust(13)} | {str(score).rjust(5)} |" for player, score in scores.items()])
+        text += "</pre>"
+        bot.send_message(message.chat.id, text, parse_mode='HTML')
+        logger.info(f"Message send: Points Table")
 
 
 # adds points to player:
 # add 3 points /ap dominik 3
 # add one point /ap dominik
-# TODO: test username autocomplete
 @bot.message_handler(commands=['addpoints', 'ap'])
 def add_points(message):
     if permissions[4] or message.from_user.id == game_master:
