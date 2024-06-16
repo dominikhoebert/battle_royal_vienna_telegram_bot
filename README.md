@@ -11,7 +11,7 @@ Intended to play a game of "Battle Royal" in Vienna.
 - `/config` - Set the map level (1 is the biggest)
 - `/poi` - Send a random Point of Interest for the current map level
 - `/respawn` - Send a random Point of Interest to respawn at
-- ~~`/points` - Send the score table~~
+- `/score` - Send the score table
 - ~~`/addpoints player points` - Add points to a player for the score table~~
 - ~~`/removepoints player points` - Remove points from a player for the score table~~
 - `/map` - Send the current map
