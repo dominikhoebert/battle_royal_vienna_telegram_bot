@@ -15,14 +15,14 @@ Intended to play a game of "Battle Royal" in Vienna.
 - ~~`/addpoints player points` - Add points to a player for the score table~~
 - ~~`/removepoints player points` - Remove points from a player for the score table~~
 - `/map` - Send the current map
-- `/permissions 0 0 0 0 0 0 0 0 ` - Set the permissions for the commands (0 gamemaser only; 1 all players)
+- `/permissions 0 0 0 0 0 0 0 0 ` - Set the permissions for the commands (0 game master only; 1 all players)
 
 ## TODO:
 
 - ~~maps as routes~~
 - points table
 - ~~game master mode: only owner can do certain actions~~
-- map: post the map
+- ~~map: post the map~~
 - timer: try multitasking
 - pois cooldown
 - reset game (pois cooldown, points table)

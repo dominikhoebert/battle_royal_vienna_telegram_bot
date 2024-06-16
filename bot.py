@@ -56,8 +56,10 @@ logger.info('Bot started')
 @bot.message_handler(commands=['start', 'hello'])
 def send_welcome(message):
     if message.from_user.id == game_master:
-        bot.reply_to(message, "Available commands: /config, /poi, /respawn, "
-                              "/points, /addpoints, /removepoints, /map, /permissions")
+        bot.send_message(message.chat.id, "Available commands: /config, /poi, /respawn, "
+                                          "/points, /addpoints, /removepoints, /map, /permissions")
+        logger.info(f"Message send: Available commands: /config, /poi, /respawn, "
+                    "/points, /addpoints, /removepoints, /map, /permissions")
 
 
 @bot.message_handler(commands=['config', 'm'])
@@ -67,6 +69,7 @@ def config(message):
         try:
             if len(message.text.split(' ')) < 2:
                 bot.reply_to(message, f"Current map level: {current_map_level}")
+                logger.info(f"Message send: Current map level: {current_map_level}")
                 return
             last_map_level = current_map_level
             current_map_level = int(message.text.split(' ')[1])
@@ -105,7 +108,7 @@ def poi(message):
     if permissions[1] or message.from_user.id == game_master:
         poi_choice = random.choice(pois[current_map_level])
         logger.info(f"POI: {poi_choice['map']}, {poi_choice['title']}, {poi_choice['url']}")
-        bot.reply_to(message, f"New POI: {poi_choice['title']}\n"
+        bot.send_message(message.chat.id, f"New POI: {poi_choice['title']}\n"
                               f"{poi_choice['url']}\n"
                               f"Take a Selfie for a Point! 📸")
 
