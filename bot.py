@@ -188,6 +188,24 @@ def remove_points(message):
         bot.reply_to(message, f"{points_to_remove} Points removed from {player}: {scores[player]}")
 
 
+@bot.message_handler(commands=['deletescore', 'dp'])
+def delete_score(message):
+    if message.from_user.id == game_master:
+        parts = message.text.split(' ')
+        if len(parts) != 2:
+            bot.reply_to(message, "Invalid command: no player name")
+            logger.debug(f"Invalid command: no player name: {message}")
+            return
+        player = parts[1]
+        if player in scores:
+            del scores[player]
+            logger.info(f"Score deleted for {player}")
+            bot.reply_to(message, f"Score deleted for {player}")
+        else:
+            logger.info(f"Score not found for {player}")
+            bot.reply_to(message, f"Score not found for {player}")
+
+
 @bot.message_handler(commands=['map'])
 def post_map(message):
     if permissions[6] or message.from_user.id == game_master:
