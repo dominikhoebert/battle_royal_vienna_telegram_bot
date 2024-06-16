@@ -132,7 +132,7 @@ def points(message):
         text += "\n".join([f"| {player.ljust(13)[:13]} | {str(score).rjust(5)} |" for player, score in scores.items()])
         text += "</pre>"
         bot.send_message(message.chat.id, text, parse_mode='HTML')
-        logger.info(f"Message send: Points Table")
+        logger.info(f"Message send: Points Table:\n{text[5:-6]}")
 
 
 # adds points to player:
@@ -166,7 +166,26 @@ def add_points(message):
 @bot.message_handler(commands=['removepoints', 'rp'])
 def remove_points(message):
     if permissions[5] or message.from_user.id == game_master:
-        ...
+        parts = message.text.split(' ')
+        if len(parts) < 2 or len(parts) > 3:
+            bot.reply_to(message, "Invalid command: no player name")
+            logger.debug(f"Invalid command: no player name: {message}")
+            return
+        if len(parts) == 2:
+            points_to_remove = 1
+        if len(parts) == 3:
+            try:
+                points_to_remove = int(parts[2])
+            except ValueError:
+                bot.reply_to(message, "Invalid command: points not a number")
+                logger.debug(f"Invalid command: points not a number: {message}")
+                return
+        player = parts[1]
+        if player not in scores:
+            scores[player] = 0
+        scores[player] -= points_to_remove
+        logger.info(f"{points_to_remove} Points removed from {player}: {scores[player]}")
+        bot.reply_to(message, f"{points_to_remove} Points removed from {player}: {scores[player]}")
 
 
 @bot.message_handler(commands=['map'])
