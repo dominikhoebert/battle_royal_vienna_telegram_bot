@@ -16,6 +16,7 @@ Intended to play a game of "Battle Royal" in Vienna.
 - ~~`/removepoints player points` - Remove points from a player for the score table~~
 - `/map` - Send the current map
 - `/permissions 0 0 0 0 0 0 0 0 ` - Set the permissions for the commands (0 game master only; 1 all players)
+- `/reset` - Reset the game (map_level, cooldowns, points table)
 
 ## TODO:
 
@@ -25,4 +26,4 @@ Intended to play a game of "Battle Royal" in Vienna.
 - ~~map: post the map~~
 - timer: try multitasking
 - pois cooldown
-- reset game (pois cooldown, points table)
+- ~~reset game~~ (pois cooldown, points table)

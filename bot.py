@@ -57,9 +57,9 @@ logger.info('Bot started')
 def send_welcome(message):
     if message.from_user.id == game_master:
         bot.send_message(message.chat.id, "Available commands: /config, /poi, /respawn, "
-                                          "/points, /addpoints, /removepoints, /map, /permissions")
+                                          "/points, /addpoints, /removepoints, /map, /permissions, /reset")
         logger.info(f"Message send: Available commands: /config, /poi, /respawn, "
-                    "/points, /addpoints, /removepoints, /map, /permissions")
+                    "/points, /addpoints, /removepoints, /map, /permissions, /reset")
 
 
 @bot.message_handler(commands=['config', 'm'])
@@ -109,8 +109,8 @@ def poi(message):
         poi_choice = random.choice(pois[current_map_level])
         logger.info(f"POI: {poi_choice['map']}, {poi_choice['title']}, {poi_choice['url']}")
         bot.send_message(message.chat.id, f"New POI: {poi_choice['title']}\n"
-                              f"{poi_choice['url']}\n"
-                              f"Take a Selfie for a Point! 📸")
+                                          f"{poi_choice['url']}\n"
+                                          f"Take a Selfie for a Point! 📸")
 
 
 @bot.message_handler(commands=['respawn'])
@@ -173,6 +173,21 @@ def change_permissions(message):
                 return bot.reply_to(message, f"Permissions set to:\n{permission_string}")
         except ValueError:
             return bot.reply_to(message, "Invalid permissions")
+
+
+@bot.message_handler(commands=['reset'])
+def reset(message):
+    if message.from_user.id == game_master:
+        global current_map_level
+        current_map_level = 1
+
+        global pois
+        pois = read_poi()
+        global maps
+        maps = read_maps()
+
+        logger.info(f"Map level reset to {current_map_level}")
+        bot.reply_to(message, f"Map level reset to {current_map_level}")
 
 
 bot.infinity_polling()
