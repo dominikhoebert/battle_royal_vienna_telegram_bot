@@ -7,7 +7,7 @@ import random
 
 logger.add('logs/logs.log', format="{time} {level} {message}", level="INFO", rotation="01:00")
 
-map_level = 4
+max_map_level = 4
 current_map_level = 1
 
 permissions = [False, False, False, False, False, False, False, False]
@@ -24,7 +24,7 @@ def read_secrets():
 
 def read_poi():
     pois = {}
-    for i in range(1, map_level + 1):
+    for i in range(1, max_map_level + 1):
         pois[i] = []
     reader = csv.DictReader(open('data/poi.csv', 'r', encoding='utf-8'))
     for row in reader:
@@ -37,7 +37,16 @@ def read_poi():
     return pois
 
 
+def read_maps():
+    maps = {}
+    reader = csv.DictReader(open('data/maps.csv', 'r', encoding='utf-8'))
+    for row in reader:
+        maps[int(row['level'])] = row['url']
+    return maps
+
+
 pois = read_poi()
+maps = read_maps()
 secrets = read_secrets()
 bot = telebot.TeleBot(secrets['bot_token'])
 game_master = int(secrets['game_master'])
@@ -47,8 +56,8 @@ logger.info('Bot started')
 @bot.message_handler(commands=['start', 'hello'])
 def send_welcome(message):
     if message.from_user.id == game_master:
-        bot.reply_to(message,"Available commands: /config, /poi, /respawn, "
-                             "/points, /addpoints, /removepoints, /map, /permissions")
+        bot.reply_to(message, "Available commands: /config, /poi, /respawn, "
+                              "/points, /addpoints, /removepoints, /map, /permissions")
 
 
 @bot.message_handler(commands=['config', 'm'])
@@ -137,9 +146,8 @@ def remove_points(message):
 @bot.message_handler(commands=['map'])
 def post_map(message):
     if permissions[6] or message.from_user.id == game_master:
-        # loop over maps directory
-        # reply map with current_map_level
-        ...
+        bot.send_message(message.chat.id, f"Map {current_map_level}: {maps[current_map_level]}")
+        logger.info(f"Message send: Map {current_map_level}: {maps[current_map_level]}")
 
 
 # set permissions for /config, /poi, /respawn, /points, /addpoints, /removepoints, /map, /permissions
