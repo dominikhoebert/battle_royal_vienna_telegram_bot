@@ -9,6 +9,7 @@ RUN pip3 install -r requirements.txt
 COPY entrypoint.sh .
 
 COPY bot.py .
+COPY pois.py .
 COPY data/poi.csv /bot/origin/
 COPY data/maps.csv /bot/origin/
 COPY data/secrets.json.sample /bot/origin/secrets.json
