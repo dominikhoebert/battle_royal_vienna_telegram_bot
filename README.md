@@ -28,5 +28,5 @@ Intended to play a game of "Battle Royal" in Vienna.
 - ~~game master mode: only owner can do certain actions~~
 - ~~map: post the map~~
 - timer: read api docs again; try multitasking
-- pois cooldown
-- ~~reset game~~ (pois cooldown, ~~points table~~)
+- ~~pois cooldown~~
+- ~~reset game~~ (~~pois cooldown~~, ~~points table~~)

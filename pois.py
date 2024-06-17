@@ -51,8 +51,10 @@ class POIs:
         current_time = datetime.now()
         pois = self.get_pois_by_level(map_level)
         ages = [(current_time - poi.last_used).total_seconds() for poi in pois.pois]
-        weights = [age / sum(ages) for age in ages][::-1]
-        return random.choices(pois.pois, weights=weights, k=1)
+        weights = [age / sum(ages) for age in ages] #[::-1]
+        choice = random.choices(pois.pois, weights=weights, k=1)
+        choice[0].last_used = current_time
+        return choice[0]
 
 
 def read_pois(filename) -> POIs:
@@ -61,7 +63,7 @@ def read_pois(filename) -> POIs:
     for row in reader:
         try:
             pois.pois.append(POI(row['title'], int(row['map']), row['url'], row['comment']))
-            #pois.pois.append(POI(row['title'], int(row['map']), row['url'], row['comment'], random_timestamp())) # For testing
+            # pois.pois.append(POI(row['title'], int(row['map']), row['url'], row['comment'], random_timestamp())) # For testing
         except ValueError:
             print(f"Error reading {row} ({row['map']} not a number); skipping")
             continue
@@ -70,5 +72,5 @@ def read_pois(filename) -> POIs:
 
 if __name__ == "__main__":
     pois = read_pois('data/poi.csv')
-    #print(pois.get_pois_by_level())
-    print(pois.get_random_poi())
+    print(pois.get_random_poi().last_used_str())
+    print(pois.get_pois_by_level())

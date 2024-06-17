@@ -4,6 +4,7 @@ import telebot  # pip install pyTelegramBotAPI
 from loguru import logger
 import csv
 import random
+from pois import POIs, POI, read_pois
 
 logger.add('logs/logs.log', format="{time} {level} {message}", level="INFO", rotation="01:00")
 
@@ -24,19 +25,7 @@ def read_secrets():
 
 
 def read_poi():
-    pois = {}
-    for i in range(1, max_map_level):
-        pois[i] = []
-    reader = csv.DictReader(open('data/poi.csv', 'r', encoding='utf-8'))
-    for row in reader:
-        try:
-            row_map_level = int(row['map'])
-        except ValueError:
-            continue
-        for i in range(1, row_map_level + 1):
-            pois[i].append(row)
-    print(pois)
-    return pois
+    return read_pois('data/poi.csv')
 
 
 def read_maps():
@@ -112,20 +101,20 @@ def config(message):
 @bot.message_handler(commands=['poi'])
 def poi(message):
     if permissions[1] or message.from_user.id == game_master:
-        poi_choice = random.choice(pois[current_map_level])
-        logger.info(f"POI: {poi_choice['map']}, {poi_choice['title']}, {poi_choice['url']}")
-        bot.send_message(message.chat.id, f"New POI: {poi_choice['title']}\n"
-                                          f"{poi_choice['url']}\n"
+        poi_choice = pois.get_random_poi(current_map_level)
+        logger.info(f"POI: {poi_choice.map}, {poi_choice.title}, {poi_choice.url}")
+        bot.send_message(message.chat.id, f"New POI: {poi_choice.title}\n"
+                                          f"{poi_choice.url}\n"
                                           f"Take a Selfie for a Point! 📸")
 
 
 @bot.message_handler(commands=['respawn'])
 def respawn(message):
     if permissions[2] or message.from_user.id == game_master:
-        poi_choice = random.choice(pois[current_map_level])
-        logger.info(f"Respawn: {poi_choice['map']}, {poi_choice['title']}, {poi_choice['url']}")
-        bot.reply_to(message, f"Respawn at: {poi_choice['title']}\n"
-                              f"{poi_choice['url']}\n"
+        poi_choice = pois.get_random_poi(current_map_level)
+        logger.info(f"Respawn: {poi_choice.map}, {poi_choice.title}, {poi_choice.url}")
+        bot.reply_to(message, f"Respawn at: {poi_choice.title}\n"
+                              f"{poi_choice.url}\n"
                               f"Take a Selfie to Respawn! 📸\n You are safe for 5 minutes after respawn!")
 
 
