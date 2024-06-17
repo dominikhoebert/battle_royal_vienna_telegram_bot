@@ -1,0 +1,11 @@
+
+name: battle-royal-vienna
+
+services:
+  battle-royal-vienna:
+    image: dominik1220/battle_royal_vienna_telegram_bot:latest
+    container_name: battle-royal-vienna
+    restart: unless-stopped
+    volumes:
+      - ./container/data:/bot/data
+      - ./container/logs:/bot/logs

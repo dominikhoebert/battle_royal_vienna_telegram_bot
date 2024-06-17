@@ -4,12 +4,14 @@ LABEL authors="Dominik"
 
 WORKDIR /bot
 
-COPY requirements.txt requirements.txt
+COPY requirements.txt .
 RUN pip3 install -r requirements.txt
+COPY entrypoint.sh .
 
-COPY *.py ./
-RUN mkdir -p /bot/data/
-COPY data/poi.csv /bot/data/
-COPY data/maps.csv /bot/data/
+COPY bot.py .
+COPY data/poi.csv /bot/origin/
+COPY data/maps.csv /bot/origin/
+COPY data/secrets.json.sample /bot/origin/secrets.json
 
-ENTRYPOINT ["python3", "bot.py"]
+ENTRYPOINT ["/bin/bash", "/bot/entrypoint.sh"]
+CMD ["python3", "bot.py"]
