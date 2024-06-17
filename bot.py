@@ -50,7 +50,11 @@ pois = read_poi()
 maps = read_maps()
 secrets = read_secrets()
 bot = telebot.TeleBot(secrets['bot_token'], parse_mode='HTML')
-game_master = int(secrets['game_master'])
+try:
+    game_master = int(secrets['game_master'])
+except ValueError:
+    print("Invalid game_master in secrets.json")
+    exit()
 logger.info('Bot started')
 
 
