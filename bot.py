@@ -35,6 +35,7 @@ def read_poi():
             continue
         for i in range(1, row_map_level + 1):
             pois[i].append(row)
+    print(pois)
     return pois
 
 
