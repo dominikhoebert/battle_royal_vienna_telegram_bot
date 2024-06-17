@@ -27,6 +27,6 @@ Intended to play a game of "Battle Royal" in Vienna.
 - ~~remove player from points table~~
 - ~~game master mode: only owner can do certain actions~~
 - ~~map: post the map~~
-- timer: try multitasking
+- timer: read api docs again; try multitasking
 - pois cooldown
 - ~~reset game~~ (pois cooldown, ~~points table~~)
