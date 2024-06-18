@@ -1,7 +1,7 @@
 game:
   name: "1. Bezirk"
   description: "Der 1. Bezirk ist der innerste Bezirk Wiens und beherbergt viele Sehenswürdigkeiten."
-  image: ""
+  image: "https://vienna-citytours.at/wp-content/uploads/2016/02/vienna-city-tours-2.jpg"
   location: "Wien"
   timer:
     - game-start: 15
