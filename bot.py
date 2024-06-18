@@ -18,6 +18,7 @@ permissions = [False, False, False, False, False, False, False, False]
 commands = ['/config', '/poi', '/respawn', '/score', '/addpoints', '/removepoints', '/map', '/permissions']
 
 scores = {}
+timers = []
 
 
 def read_secrets():
@@ -242,27 +243,11 @@ def reset(message):
         pois = read_poi()
         global maps
         maps = read_maps()
+        global timers
+        timers = []
 
-        logger.info(f"Map level reset to {current_map_level}")
-        bot.reply_to(message, f"Map level reset to {current_map_level}")
-
-
-# Function to send a notification
-def notify(user_id, timer_name, command):
-    bot.send_message(user_id, f"{timer_name}")
-    logger.info(f"Timer {timer_name} expired.")
-    if command is not None:
-        global current_map_level
-        if command[0] == 'map':
-            bot.send_message(user_id, f"Map {current_map_level}: {maps[current_map_level]}")
-            logger.info(f"Timer {timer_name}: Message send: Map {current_map_level}: {maps[current_map_level]}")
-        if command[0] == 'config':
-            current_map_level += 1
-            bot.send_message(user_id, f"Current map level: {current_map_level}")
-            logger.info(f"Timer {timer_name}: Map level changed to {current_map_level}")
-
-
-timers = []
+        logger.info("Full reset: scores, map level, pois, maps, timers")
+        bot.reply_to(message, f"Full reset: scores, map level, pois, maps, timers")
 
 
 # Command to set a new timer
@@ -298,15 +283,28 @@ def set_timer(message):
             elif len(command) == 1:
                 for timer in timers:
                     remaining_time = timer.get_remaining_time()
-                    bot.send_message(message.from_user.id, f"Timer for {timer} has {remaining_time} minutes remaining.")
+                    bot.send_message(message.from_user.id,
+                                     f"Timer for {timer.name} has {remaining_time} minutes remaining.")
                     logger.info(f"Timer for {timer} has {remaining_time} minutes remaining.")
         except ValueError:
             bot.reply_to(message, "Please provide the duration in minutes as an integer.")
             logger.debug(f"Invalid timer: {message}")
 
 
-def timer_function(bot_timer):
-    print(f"Timer {bot_timer.name} finished")
+def timer_function(bot_timer: BotTimer):
+    bot.send_message(bot_timer.user_id, f"{bot_timer.name}")
+    logger.info(f"Timer {bot_timer.name} expired.")
+    global current_map_level
+    if bot_timer.config is not None:
+        bot.send_message(bot_timer.user_id, f"Current map level: {current_map_level}")
+        logger.info(f"Timer {bot_timer.name}: Map level changed to {current_map_level}")
+    if bot_timer.map:
+        bot.send_message(bot_timer.user_id, f"Map {current_map_level}: {maps[current_map_level]}")
+        logger.info(f"Timer {bot_timer.name}: Message send: Map {current_map_level}: {maps[current_map_level]}")
+    if bot_timer.message is not None:
+        bot.send_message(bot_timer.user_id, f"{bot_timer.message}")
+        logger.info(f"Timer {bot_timer.name}: Message send: {bot_timer.message}")
+    timers.remove(bot_timer)
 
 
 bot.infinity_polling()
