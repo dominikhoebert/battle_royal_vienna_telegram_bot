@@ -30,3 +30,6 @@ Intended to play a game of "Battle Royal" in Vienna.
 - timer: read api docs again; try multitasking
 - ~~pois cooldown~~
 - ~~reset game~~ (~~pois cooldown~~, ~~points table~~)
+- test telegram location https://core.telegram.org/bots/api#location
+- https://pytba.readthedocs.io/en/latest/sync_version/index.html#telebot.TeleBot.send_location
+- 
