@@ -29,6 +29,7 @@ Intended to play a game of "Battle Royal" in Vienna.
 - ~~game master mode: only owner can do certain actions~~
 - ~~map: post the map~~
 - ~~timer~~
+- timer run command
 - prepeare gameplan (/play, /pause)
 - ~~pois cooldown~~
 - ~~reset game~~ (~~pois cooldown~~, ~~points table~~)

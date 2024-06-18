@@ -249,24 +249,36 @@ def reset(message):
 timers = {}
 
 
+# TODO Logging
 # Function to send a notification
-def notify(user_id, timer_name):
-    bot.send_message(user_id, f"The timer for {timer_name} has ended.")
+def notify(user_id, timer_name, command):
+    bot.send_message(user_id, f"{timer_name}")
+    if command is not None:
+        global current_map_level
+        if command[0] == 'map':
+            bot.send_message(user_id, f"Map {current_map_level}: {maps[current_map_level]}")
+        if command[0] == 'config':
+            current_map_level += 1
+            bot.send_message(user_id, f"Current map level: {current_map_level}")
 
 
+# TODO logging
 # Command to set a new timer
 @bot.message_handler(commands=['timer'])
 def set_timer(message):
     if message.from_user.id == game_master:
         try:
             command = message.text.split()
-            if len(command) == 3:
+            if len(command) >= 3:
                 timer_name = command[1]
                 duration = int(command[2]) * 60  # Convert minutes to seconds
                 end_time = time.time() + duration
                 if timer_name in timers:
                     timers[timer_name]['timer'].cancel()
-                timer = Timer(duration, notify, [message.chat.id, timer_name])
+                if len(command) == 3:
+                    timer = Timer(duration, notify, [message.chat.id, timer_name, None])
+                else:
+                    timer = Timer(duration, notify, [message.chat.id, timer_name, command[3:]])
                 timers[timer_name] = {'end_time': end_time, 'timer': timer}
                 timer.start()
                 bot.reply_to(message, f"Timer for {timer_name} set for {command[2]} minutes.")
@@ -277,8 +289,10 @@ def set_timer(message):
                     bot.reply_to(message, f"Timer for {timer_name} has {remaining_time} minutes remaining.")
                 else:
                     bot.reply_to(message, f"No active timer found for {timer_name}.")
-            else:
-                bot.reply_to(message, "Usage: /timer <name> <minutes> or /timer <name>")
+            elif len(command) == 1:
+                for timer in timers:
+                    remaining_time = int((timers[timer]['end_time'] - time.time()) / 60)
+                    bot.send_message(message.from_user.id, f"Timer for {timer} has {remaining_time} minutes remaining.")
         except ValueError:
             bot.reply_to(message, "Please provide the duration in minutes as an integer.")
 
