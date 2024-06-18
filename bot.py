@@ -273,8 +273,8 @@ def set_timer(message):
                 for timer in timers:
                     if timer == timer_name:
                         remaining_time = timer.get_remaining_time()
-                        bot.reply_to(message, f"Timer for {timer_name} has {remaining_time} minutes remaining.")
-                        logger.info(f"Timer for {timer_name} has {remaining_time} minutes remaining.")
+                        bot.reply_to(message, f"Timer for {timer_name} has {remaining_time:.1f} minutes remaining.")
+                        logger.info(f"Timer for {timer_name} has {remaining_time:.1f} minutes remaining.")
                         found = True
                         continue
                 if not found:
@@ -284,8 +284,8 @@ def set_timer(message):
                 for timer in timers:
                     remaining_time = timer.get_remaining_time()
                     bot.send_message(message.from_user.id,
-                                     f"Timer for {timer.name} has {remaining_time} minutes remaining.")
-                    logger.info(f"Timer for {timer} has {remaining_time} minutes remaining.")
+                                     f"Timer for {timer.name} has {remaining_time:.1f} minutes remaining.")
+                    logger.info(f"Timer for {timer.name} has {remaining_time:.1f} minutes remaining.")
         except ValueError:
             bot.reply_to(message, "Please provide the duration in minutes as an integer.")
             logger.debug(f"Invalid timer: {message}")
@@ -296,6 +296,7 @@ def timer_function(bot_timer: BotTimer):
     logger.info(f"Timer {bot_timer.name} expired.")
     global current_map_level
     if bot_timer.config is not None:
+        current_map_level = bot_timer.config
         bot.send_message(bot_timer.user_id, f"Current map level: {current_map_level}")
         logger.info(f"Timer {bot_timer.name}: Map level changed to {current_map_level}")
     if bot_timer.map:
