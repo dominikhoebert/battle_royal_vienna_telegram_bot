@@ -1,0 +1,40 @@
+game:
+  name: "1. Bezirk"
+  description: "Der 1. Bezirk ist der innerste Bezirk Wiens und beherbergt viele Sehenswürdigkeiten."
+  image: ""
+  location: "Wien"
+  timer:
+    - game-start: 15
+      message: "Spiel beginnt! GPS einschalten und los geht's!"
+    - map2: 20
+      message: "Noch 5 Minuten bis zur nächsten Karte!"
+      config: 2
+      map: true
+    - map2active: 5
+      message: "Neue Karte ist nun Aktiv! Spieler außerhalb können nun nicht mehr Punkten!"
+      map: true
+    - map3: 15
+      message: "Noch 5 Minuten bis zur nächsten Karte!"
+      config: 3
+      map: true
+    - map3active: 5
+      message: "Neue Karte ist nun Aktiv! Spieler außerhalb können nun nicht mehr Punkten!"
+      map: true
+    - map4: 10
+      message: "Noch 5 Minuten bis zur nächsten Karte!"
+      config: 4
+      map: true
+    - map4active: 5
+      message: "Neue Karte ist nun Aktiv! Spieler außerhalb können nun nicht mehr Punkten!"
+      map: true
+    - map5: 5
+      message: "Noch 5 Minuten bis zur nächsten Karte! Die letzte Karte! Kein Respawn mehr möglich!"
+      config: 5
+      map: true
+    - map5active: 5
+      message: "Neue Karte ist nun Aktiv! Spieler außerhalb können nun nicht mehr Punkten!"
+      map: true
+    - game-end: 5
+      message: "Game Over!"
+
+
