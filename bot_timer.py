@@ -1,15 +1,15 @@
-from dataclasses import dataclass, field
 from threading import Timer
 from time import time
 
 
 class BotTimer:
-    def __init__(self, name: str, interval: int, user_id: int, message: str = None, map: bool = False,
+    def __init__(self, name: str, interval: int, user_id: int, function, message: str = None, map: bool = False,
                  config: int = None):
         self.name = name
         self.interval = interval
         self.user_id = user_id
-        self.timer = Timer(interval * 60, timer_function, [self])
+        self.function = function
+        self.timer = Timer(interval * 60, self.function, [self])
         self.timer.start()
         self.running = True
         self.message = message
@@ -28,15 +28,13 @@ class BotTimer:
 
     def resume(self):
         if not self.running:
-            self.timer = Timer(self.interval * 60, timer_function, [self])
+            self.timer = Timer(self.interval * 60, self.function, [self])
             self.timer.start()
             self.start_time = time()
             self.running = True
 
-
-def timer_function(bot_timer):
-    print(f"Timer {bot_timer.name} finished")
-    ...
+    def __eq__(self, other: str):
+        return self.name == other
 
 
 if __name__ == "__main__":

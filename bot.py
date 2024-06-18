@@ -5,6 +5,8 @@ from loguru import logger
 import csv
 from threading import Timer
 import time
+
+from bot_timer import BotTimer
 from pois import read_pois
 
 logger.add('logs/logs.log', format="{time} {level} {message}", level="INFO", rotation="01:00")
@@ -245,10 +247,6 @@ def reset(message):
         bot.reply_to(message, f"Map level reset to {current_map_level}")
 
 
-# Dictionary to store timers
-timers = {}
-
-
 # Function to send a notification
 def notify(user_id, timer_name, command):
     bot.send_message(user_id, f"{timer_name}")
@@ -264,43 +262,51 @@ def notify(user_id, timer_name, command):
             logger.info(f"Timer {timer_name}: Map level changed to {current_map_level}")
 
 
+timers = []
+
+
 # Command to set a new timer
 @bot.message_handler(commands=['timer'])
 def set_timer(message):
     if message.from_user.id == game_master:
         try:
             command = message.text.split()
-            if len(command) >= 3:
-                timer_name = command[1]
-                duration = int(command[2]) * 60  # Convert minutes to seconds
-                end_time = time.time() + duration
-                if timer_name in timers:
-                    timers[timer_name]['timer'].cancel()
-                if len(command) == 3:
-                    timer = Timer(duration, notify, [message.chat.id, timer_name, None])
-                else:
-                    timer = Timer(duration, notify, [message.chat.id, timer_name, command[3:]])
-                timers[timer_name] = {'end_time': end_time, 'timer': timer}
-                timer.start()
-                bot.reply_to(message, f"Timer for {timer_name} set for {command[2]} minutes.")
-                logger.info(f"Timer for {timer_name} set for {command[2]} minutes.")
-            elif len(command) == 2:
+            if len(command) >= 3:  # /timer name duration [map] [config]
                 timer_name = command[1]
                 if timer_name in timers:
-                    remaining_time = int((timers[timer_name]['end_time'] - time.time()) / 60)
-                    bot.reply_to(message, f"Timer for {timer_name} has {remaining_time} minutes remaining.")
-                    logger.info(f"Timer for {timer_name} has {remaining_time} minutes remaining.")
-                else:
+                    timers[timer_name].pause()
+                    timers.remove(timers[timer_name])
+                interval = int(command[2])
+                config = current_map_level + 1 if "config" in command else None
+                timers.append(BotTimer(timer_name, interval, message.chat.id, timer_function,
+                                       map=True if "map" in command else False, config=config))
+                bot.reply_to(message, f"Timer for {timer_name} set for {interval} minutes.")
+                logger.info(f"Timer for {timer_name} set for {interval} minutes.")
+            elif len(command) == 2:  # /timer name
+                timer_name = command[1]
+                found = False
+                for timer in timers:
+                    if timer == timer_name:
+                        remaining_time = timer.get_remaining_time()
+                        bot.reply_to(message, f"Timer for {timer_name} has {remaining_time} minutes remaining.")
+                        logger.info(f"Timer for {timer_name} has {remaining_time} minutes remaining.")
+                        found = True
+                        continue
+                if not found:
                     bot.reply_to(message, f"No active timer found for {timer_name}.")
                     logger.info(f"No active timer found for {timer_name}.")
             elif len(command) == 1:
                 for timer in timers:
-                    remaining_time = int((timers[timer]['end_time'] - time.time()) / 60)
+                    remaining_time = timer.get_remaining_time()
                     bot.send_message(message.from_user.id, f"Timer for {timer} has {remaining_time} minutes remaining.")
                     logger.info(f"Timer for {timer} has {remaining_time} minutes remaining.")
         except ValueError:
             bot.reply_to(message, "Please provide the duration in minutes as an integer.")
             logger.debug(f"Invalid timer: {message}")
+
+
+def timer_function(bot_timer):
+    print(f"Timer {bot_timer.name} finished")
 
 
 bot.infinity_polling()
