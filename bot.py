@@ -3,8 +3,6 @@ import json
 import telebot  # pip install pyTelegramBotAPI
 from loguru import logger
 import csv
-from threading import Timer
-import time
 
 from bot_timer import BotTimer
 from pois import read_pois
@@ -75,29 +73,6 @@ def config(message):
         except ValueError:
             logger.debug(f"Invalid map level: {message}")
             bot.reply_to(message, f"Invalid map level")
-
-
-# @bot.message_handler(commands=['countdown', 'c'])
-# def countdown(message):
-#     global timer
-#     try:
-#         if len(message.text.split(' ')) < 2:
-#             if len(timer) == 0:
-#                 bot.reply_to(message, f"No countdown")
-#                 return
-#             for t in timer:
-#                 bot.reply_to(message, f"{t['title']}: {t['time']} minutes")
-#             return
-#         time = int(message.text.split(' ')[1])
-#         title = message.text.split(' ')[2] if len(message.text.split(' ')) > 2 else "NoName"
-#         new_timer = {'time': time, 'title': title}
-#         timer.append(new_timer)
-#         logger.info(f"New Countdown {new_timer['title']}: {new_timer['time']} minutes")
-#         bot.reply_to(message, f"New Countdown {new_timer['title']}: {new_timer['time']} minutes")
-#         return
-#     except ValueError:
-#         logger.debug(f"Invalid countdown: {message}")
-#         bot.reply_to(message, f"Invalid countdown")
 
 
 @bot.message_handler(commands=['poi'])
