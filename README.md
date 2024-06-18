@@ -8,13 +8,19 @@ Intended to play a game of "Battle Royal" in Vienna.
 ## Commands
 
 - `/start` - See all commands
-- `/config` - Set the map level (1 is the biggest)
+- `/config map-level` - Set the map level (1-5; 1 is the biggest)
+- `/config` - Get the map level
 - `/poi` - Send a random Point of Interest for the current map level
 - `/respawn` - Send a random Point of Interest to respawn at
 - `/score` - Send the score table
+- `/timer name minutes command` - Creates a timer with a name and for a certain number of minutes and run commands (`map` or `config`)
 - `/timer name minutes` - Creates a timer with a name and for a certain number of minutes
+- `/timer name` - Gets the remaining time of the timer
+- `/timer` - Gets the remaining time of all timers
 - `/addpoints player points` - Add points to a player for the score table
+- `/addpoints player` - Add 1 point to a player for the score table
 - `/removepoints player points` - Remove points from a player for the score table
+- `/removepoints player` - Remove 1 point from a player for the score table
 - `/deletescore playername` - Remove Player from Score Table
 - `/map` - Send the current map
 - `/permissions 0 0 0 0 0 0 0 0 ` - Set the permissions for the commands (0 game master only; 1 all players)
@@ -29,7 +35,7 @@ Intended to play a game of "Battle Royal" in Vienna.
 - ~~game master mode: only owner can do certain actions~~
 - ~~map: post the map~~
 - ~~timer~~
-- timer run command
+- ~~timer run command~~
 - prepeare gameplan (/play, /pause)
 - ~~pois cooldown~~
 - ~~reset game~~ (~~pois cooldown~~, ~~points table~~)
