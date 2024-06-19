@@ -1,0 +1,11 @@
+certifi==2024.6.2
+charset-normalizer==3.3.2
+idna==3.7
+loguru==0.7.2
+pip==24.0
+pytelegrambotapi==4.19.1
+PyYAML==6.0.1
+requests==2.32.3
+setuptools==69.5.1
+urllib3==2.2.1
+wheel==0.43.0

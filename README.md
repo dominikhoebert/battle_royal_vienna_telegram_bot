@@ -25,6 +25,9 @@ Intended to play a game of "Battle Royal" in Vienna.
 - `/map` - Send the current map
 - `/permissions 0 0 0 0 0 0 0 0 ` - Set the permissions for the commands (0 game master only; 1 all players)
 - `/reset` - Reset the game (map_level, cooldowns, points table)
+- `/play gamename` - Start a game using a .yaml gameplan
+- `/pause` - Pause all timers
+- `/resume` - Resume all timers
 
 
 ## TODO:
@@ -36,7 +39,7 @@ Intended to play a game of "Battle Royal" in Vienna.
 - ~~map: post the map~~
 - ~~timer~~
 - ~~timer run command~~
-- prepeare gameplan (/play, /pause)
+- ~~prepeare gameplan~~ (~~/play~~, /pause)
 - ~~pois cooldown~~
 - ~~reset game~~ (~~pois cooldown~~, ~~points table~~)
 - test telegram location https://core.telegram.org/bots/api#location

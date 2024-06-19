@@ -3,8 +3,10 @@ import json
 import telebot  # pip install pyTelegramBotAPI
 from loguru import logger
 import csv
+import os
+import yaml
 
-from bot_timer import BotTimer
+from bot_timer import BotTimer, PreparedTimer
 from pois import read_pois
 
 logger.add('logs/logs.log', format="{time} {level} {message}", level="INFO", rotation="01:00")
@@ -256,11 +258,15 @@ def set_timer(message):
                     bot.reply_to(message, f"No active timer found for {timer_name}.")
                     logger.info(f"No active timer found for {timer_name}.")
             elif len(command) == 1:
-                for timer in timers:
-                    remaining_time = timer.get_remaining_time()
-                    bot.send_message(message.from_user.id,
-                                     f"Timer for {timer.name} has {remaining_time:.1f} minutes remaining.")
-                    logger.info(f"Timer for {timer.name} has {remaining_time:.1f} minutes remaining.")
+                if len(timers) == 0:
+                    bot.reply_to(message, "No active timers.")
+                    logger.info("No active timers.")
+                else:
+                    for timer in timers:
+                        remaining_time = timer.get_remaining_time()
+                        bot.send_message(message.from_user.id,
+                                         f"Timer for {timer.name} has {remaining_time:.1f} minutes remaining.")
+                        logger.info(f"Timer for {timer.name} has {remaining_time:.1f} minutes remaining.")
         except ValueError:
             bot.reply_to(message, "Please provide the duration in minutes as an integer.")
             logger.debug(f"Invalid timer: {message}")
@@ -280,7 +286,92 @@ def timer_function(bot_timer: BotTimer):
     if bot_timer.message is not None:
         bot.send_message(bot_timer.user_id, f"{bot_timer.message}")
         logger.info(f"Timer {bot_timer.name}: Message send: {bot_timer.message}")
+    if bot_timer.next_prepared_timer is not None:
+        next_bot_timer = bot_timer.next_prepared_timer.create_bot_timer()
+        timers.append(next_bot_timer)
+        logger.info(f"Timer {bot_timer.name}: Next timer started: {next_bot_timer.name}")
     timers.remove(bot_timer)
+
+
+@bot.message_handler(commands=['play'])
+def play_game(message):
+    if message.from_user.id == game_master:
+        # read in command[1]
+        command = message.text.split(' ')
+        if len(command) == 2:
+            # find command[1].yaml or .yml in data folder
+            directory = os.fsencode("data")
+            for file in os.listdir(directory):
+                filename = os.fsdecode(file)
+                if (filename.endswith(".yaml") or filename.endswith(".yml")) and filename.startswith(command[1]):
+                    # read in file
+                    first_timer = create_timers_from_file(filename, message.chat.id)
+                    timers.append(first_timer)
+                    bot.send_message(message.chat.id, f"Game started: {command[1]}")
+                    print(timers)
+                    return
+            bot.send_message(message.chat.id, "File not found: " + command[1])
+            logger.debug(f"File not found: {command[1]}")
+        else:
+            bot.send_message(message.chat.id, "Invalid command: /play <filename>")
+            logger.debug(f"Invalid command: {message}")
+            return
+
+
+def create_timers_from_file(filename, user_id):
+    # read in file
+    with open(f'data/{filename}', 'r') as file:
+        game_plan_yaml = yaml.safe_load(file)
+        if 'game' not in game_plan_yaml:
+            bot.reply_to(user_id, "Invalid game plan file")
+            logger.debug(f"Invalid game plan file, 'game' not found: {filename}")
+            return
+        game = game_plan_yaml['game']
+        start_message = game.get('name', "") + " " + game.get('description', "")
+        bot.send_message(user_id, start_message)
+        logger.info(f"Game started: {start_message}")
+        try:
+            timers_plan = game_plan_yaml['game']['timer']
+        except KeyError:
+            bot.reply_to(user_id, "No timers found in file")
+            logger.debug(f"No timers found in file: {filename}")
+            return
+        # create prepared timers
+        previous_timer = None
+        first_timer = None
+        timer_count = 0
+        for timer in timers_plan:
+            try:
+                name = next(iter(timer))
+                interval = timer[name]
+                message = timer.get('message', None)
+                map = timer.get('map', False)
+                config = timer.get('config', None)
+                next_prepared_timer = timer.get('next_prepared_timer', None)
+                prepared_timer = PreparedTimer(name, interval, user_id, timer_function, message, map, config)
+                timer_count += 1
+            except KeyError:
+                print("Invalid timer")
+                bot.reply_to(user_id, "Invalid timer in file")
+                logger.debug(f"Invalid timer in file: {filename}")
+                return
+            if first_timer is None:
+                first_timer = prepared_timer
+            if previous_timer is not None:
+                previous_timer.next_prepared_timer = prepared_timer
+            previous_timer = prepared_timer
+        bot.reply_to(user_id, f"{timer_count} timers created")
+        logger.info(f"{timer_count} timers created")
+        # create bot timers
+        # start timers
+        return first_timer.create_bot_timer()
+
+
+@bot.message_handler(commands=['pause'])
+def pause_game(message):
+    if message.from_user.id == game_master:
+        # pause all timers
+        ...
 
 
 bot.infinity_polling()

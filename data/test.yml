@@ -1,42 +1,40 @@
 game:
-  name: "1. Bezirk"
-  description: "Der 1. Bezirk ist der innerste Bezirk Wiens und beherbergt viele Sehenswürdigkeiten."
+  name: "test"
+  description: "Testing"
   image: "https://vienna-citytours.at/wp-content/uploads/2016/02/vienna-city-tours-2.jpg"
   location: "Wien"
   timer:
-    - game-start: 15
+    - game-start: 1
       message: "Spiel beginnt! GPS einschalten und los geht's!"
-      config: 1
-      map: true
-    - map2: 20
+    - map2: 1
       message: "Noch 5 Minuten bis zur nächsten Karte!"
       config: 2
       map: true
-    - map2active: 5
+    - map2active: 1
       message: "Neue Karte ist nun Aktiv! Spieler außerhalb können nun nicht mehr Punkten!"
       map: true
-    - map3: 15
+    - map3: 1
       message: "Noch 5 Minuten bis zur nächsten Karte!"
       config: 3
       map: true
-    - map3active: 5
+    - map3active: 1
       message: "Neue Karte ist nun Aktiv! Spieler außerhalb können nun nicht mehr Punkten!"
       map: true
-    - map4: 10
+    - map4: 1
       message: "Noch 5 Minuten bis zur nächsten Karte!"
       config: 4
       map: true
-    - map4active: 5
+    - map4active: 1
       message: "Neue Karte ist nun Aktiv! Spieler außerhalb können nun nicht mehr Punkten!"
       map: true
-    - map5: 5
+    - map5: 1
       message: "Noch 5 Minuten bis zur nächsten Karte! Die letzte Karte! Kein Respawn mehr möglich!"
       config: 5
       map: true
-    - map5active: 5
+    - map5active: 1
       message: "Neue Karte ist nun Aktiv! Spieler außerhalb können nun nicht mehr Punkten!"
       map: true
-    - game-end: 5
+    - game-end: 1
       message: "Game Over!"
 
 
