@@ -8,6 +8,7 @@ Intended to play a game of "Battle Royal" in Vienna.
 ## Commands
 
 - `/start` - See all commands
+- `/help` - See all commands and description
 - `/config map-level` - Set the map level (1-5; 1 is the biggest)
 - `/config` - Get the map level
 - `/poi` - Send a random Point of Interest for the current map level
@@ -46,4 +47,4 @@ Intended to play a game of "Battle Royal" in Vienna.
 - https://pytba.readthedocs.io/en/latest/sync_version/index.html#telebot.TeleBot.send_location
 - update /start
 - update /permissions
-- help
+- ~~help~~

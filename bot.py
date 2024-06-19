@@ -59,6 +59,39 @@ def send_welcome(message):
                     "/score, /addpoints, /removepoints, /map, /permissions, /reset")
 
 
+help_message = """Commands
+
+- /start - See all commands
+- /help - See all commands and description
+- /config map-level - Set the map level (1-5; 1 is the biggest)
+- /config - Get the map level
+- /poi - Send a random Point of Interest for the current map level
+- /respawn - Send a random Point of Interest to respawn at
+- /score - Send the score table
+- /timer name minutes command - Creates a timer with a name and for a certain number of minutes and run commands (`map` or `config`)
+- /timer name minutes - Creates a timer with a name and for a certain number of minutes
+- /timer name - Gets the remaining time of the timer
+- /timer - Gets the remaining time of all timers
+- /addpoints player points - Add points to a player for the score table
+- /addpoints player - Add 1 point to a player for the score table
+- /removepoints player points - Remove points from a player for the score table
+- /removepoints player - Remove 1 point from a player for the score table
+- /deletescore playername - Remove Player from Score Table
+- /map - Send the current map
+- /permissions 0 0 0 0 0 0 0 0  - Set the permissions for the commands (0 game master only; 1 all players)
+- /reset - Reset the game (map level, cooldowns, points table)
+- /play gamename - Start a game using a .yaml gameplan
+- /pause - Pause all timers
+- /resume - Resume all timers"""
+
+
+@bot.message_handler(commands=['help'])
+def help(message):
+    if message.from_user.id == game_master:
+        bot.reply_to(message, help_message, parse_mode='MARKDOWN')
+        logger.info(f"Message send: Help message")
+
+
 @bot.message_handler(commands=['config', 'm'])
 def config(message):
     if permissions[0] or message.from_user.id == game_master:
@@ -325,7 +358,7 @@ def create_timers_from_file(filename, user_id):
     with open(f'data/{filename}', 'r') as file:
         game_plan_yaml = yaml.safe_load(file)
         if 'game' not in game_plan_yaml:
-            bot.reply_to(user_id, "Invalid game plan file")
+            bot.send_message(user_id, "Invalid game plan file")
             logger.debug(f"Invalid game plan file, 'game' not found: {filename}")
             return
         game = game_plan_yaml['game']
@@ -335,7 +368,7 @@ def create_timers_from_file(filename, user_id):
         try:
             timers_plan = game_plan_yaml['game']['timer']
         except KeyError:
-            bot.reply_to(user_id, "No timers found in file")
+            bot.send_message(user_id, "No timers found in file")
             logger.debug(f"No timers found in file: {filename}")
             return
         # create prepared timers
@@ -354,7 +387,7 @@ def create_timers_from_file(filename, user_id):
                 timer_count += 1
             except KeyError:
                 print("Invalid timer")
-                bot.reply_to(user_id, "Invalid timer in file")
+                bot.send_message(user_id, "Invalid timer in file")
                 logger.debug(f"Invalid timer in file: {filename}")
                 return
             if first_timer is None:
@@ -362,14 +395,13 @@ def create_timers_from_file(filename, user_id):
             if previous_timer is not None:
                 previous_timer.next_prepared_timer = prepared_timer
             previous_timer = prepared_timer
-        bot.reply_to(user_id, f"{timer_count} timers created")
+        bot.send_message(user_id, f"{timer_count} timers created")
         logger.info(f"{timer_count} timers created")
         # create bot timers
         # start timers
         return first_timer.create_bot_timer()
 
 
-# TODO test
 @bot.message_handler(commands=['pause'])
 def pause_game(message):
     if message.from_user.id == game_master:
@@ -380,11 +412,10 @@ def pause_game(message):
         logger.info("Game paused. All timers paused")
 
 
-# TODO test
 @bot.message_handler(commands=['resume'])
 def pause_game(message):
     if message.from_user.id == game_master:
-        # pause all timers
+        # resume all timers
         for timer in timers:
             timer.resume()
         bot.send_message(message.chat.id, "Game resumed")

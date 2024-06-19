@@ -1,6 +1,6 @@
 game:
   name: "1. Bezirk"
-  description: "Der 1. Bezirk ist der innerste Bezirk Wiens und beherbergt viele Sehenswürdigkeiten."
+  description: "Der 1. Bezirk ist der innerste Bezirk Wiens und beherbergt viele Sehenswürdigkeiten.\n15min Zeit um sich zu verteilen. GPS ist noch aus."
   image: "https://vienna-citytours.at/wp-content/uploads/2016/02/vienna-city-tours-2.jpg"
   location: "Wien"
   timer:
