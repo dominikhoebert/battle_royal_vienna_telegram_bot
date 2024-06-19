@@ -1,7 +1,7 @@
-# battle royal vienna telegram bot
+# battle royal telegram bot
 
-Simple Telegram Bot sends random Point of Interrests (POIs) in Vienna to a group chat.
-Intended to play a game of "Battle Royal" in Vienna.
+Telegram Bot sends random Point of Interrests (POIs) to a group chat.
+Intended to play a game of "Battle Royal".
 
 [Rules](https://github.com/dominikhoebert/battle_royal_vienna_telegram_bot/blob/master/Battle%20Royal%20Vienna.md)
 
@@ -24,7 +24,7 @@ Intended to play a game of "Battle Royal" in Vienna.
 - `/removepoints player` - Remove 1 point from a player for the score table
 - `/deletescore playername` - Remove Player from Score Table
 - `/map` - Send the current map
-- `/permissions 0 0 0 0 0 0 0 0 ` - Set the permissions for the commands (0 game master only; 1 all players)
+- `/permissions level` - Set the permissions for the commands (0 game master only; 1 poi, respawn, addpoints for players, 2 unrestriced)
 - `/reset` - Reset the game (map_level, cooldowns, points table)
 - `/play gamename` - Start a game using a .yaml gameplan
 - `/pause` - Pause all timers
@@ -45,6 +45,6 @@ Intended to play a game of "Battle Royal" in Vienna.
 - ~~reset game~~ (~~pois cooldown~~, ~~points table~~)
 - test telegram location https://core.telegram.org/bots/api#location
 - https://pytba.readthedocs.io/en/latest/sync_version/index.html#telebot.TeleBot.send_location
-- update /start
-- update /permissions
+- ~~update /start~~
+- ~~update /permissions~~
 - ~~help~~

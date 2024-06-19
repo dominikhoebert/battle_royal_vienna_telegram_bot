@@ -10,8 +10,11 @@ COPY entrypoint.sh .
 
 COPY bot.py .
 COPY pois.py .
+COPY bot_timer.py .
 COPY data/poi.csv /bot/origin/
 COPY data/maps.csv /bot/origin/
+COPY data/test.yml /bot/origin/
+COPY data/1bezirk.yml /bot/origin/
 COPY data/secrets.json.sample /bot/origin/secrets.json
 
 ENTRYPOINT ["/bin/bash", "/bot/entrypoint.sh"]

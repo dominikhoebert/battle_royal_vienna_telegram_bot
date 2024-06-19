@@ -14,8 +14,7 @@ logger.add('logs/logs.log', format="{time} {level} {message}", level="INFO", rot
 max_map_level = 5
 current_map_level = 1
 
-permissions = [False, False, False, False, False, False, False, False]
-commands = ['/config', '/poi', '/respawn', '/score', '/addpoints', '/removepoints', '/map', '/permissions']
+permissions = 0
 
 scores = {}
 timers = []
@@ -52,11 +51,10 @@ logger.info('Bot started')
 
 @bot.message_handler(commands=['start', 'hello'])
 def send_welcome(message):
-    if message.from_user.id == game_master:
-        bot.send_message(message.chat.id, "Available commands: /config, /poi, /respawn, "
-                                          "/score, /addpoints, /removepoints, /map, /permissions, /reset")
-        logger.info(f"Message send: Available commands: /config, /poi, /respawn, "
-                    "/score, /addpoints, /removepoints, /map, /permissions, /reset")
+    if permissions == 2 or message.from_user.id == game_master:
+        bot.send_message(message.chat.id, "Available commands: /start /help /config /poi /respawn /score /timer "
+                                          "/addpoints /removepoints /map /permissions /reset /play /pause /resume")
+        logger.info(f"Message send: Start message")
 
 
 help_message = """Commands
@@ -78,7 +76,7 @@ help_message = """Commands
 - /removepoints player - Remove 1 point from a player for the score table
 - /deletescore playername - Remove Player from Score Table
 - /map - Send the current map
-- /permissions 0 0 0 0 0 0 0 0  - Set the permissions for the commands (0 game master only; 1 all players)
+- /permissions level  - Set the permissions for the commands (0 game master only; 1 poi, respawn, addpoints for players, 2 unrestriced)
 - /reset - Reset the game (map level, cooldowns, points table)
 - /play gamename - Start a game using a .yaml gameplan
 - /pause - Pause all timers
@@ -87,14 +85,14 @@ help_message = """Commands
 
 @bot.message_handler(commands=['help'])
 def help(message):
-    if message.from_user.id == game_master:
+    if permissions == 2 or message.from_user.id == game_master:
         bot.reply_to(message, help_message, parse_mode='MARKDOWN')
         logger.info(f"Message send: Help message")
 
 
 @bot.message_handler(commands=['config', 'm'])
 def config(message):
-    if permissions[0] or message.from_user.id == game_master:
+    if permissions == 2 or message.from_user.id == game_master:
         global current_map_level
         try:
             if len(message.text.split(' ')) < 2:
@@ -112,7 +110,7 @@ def config(message):
 
 @bot.message_handler(commands=['poi'])
 def poi(message):
-    if permissions[1] or message.from_user.id == game_master:
+    if permissions >= 1 or message.from_user.id == game_master:
         poi_choice = pois.get_random_poi(current_map_level)
         logger.info(f"POI: {poi_choice.map}, {poi_choice.title}, {poi_choice.url}")
         bot.send_message(message.chat.id, f"New POI: {poi_choice.title}\n"
@@ -122,7 +120,7 @@ def poi(message):
 
 @bot.message_handler(commands=['respawn'])
 def respawn(message):
-    if permissions[2] or message.from_user.id == game_master:
+    if permissions >= 1 or message.from_user.id == game_master:
         poi_choice = pois.get_random_poi(current_map_level)
         logger.info(f"Respawn: {poi_choice.map}, {poi_choice.title}, {poi_choice.url}")
         bot.reply_to(message, f"Respawn at: {poi_choice.title}\n"
@@ -133,7 +131,7 @@ def respawn(message):
 # show points table
 @bot.message_handler(commands=['points', 'table', 'score'])
 def points(message):
-    if permissions[3] or message.from_user.id == game_master:
+    if permissions == 2 or message.from_user.id == game_master:
         text = "<pre>| Player        | Score |\n|---------------|-------|\n"
         text += "\n".join([f"| {player.ljust(13)[:13]} | {str(score).rjust(5)} |" for player, score in scores.items()])
         text += "</pre>"
@@ -146,7 +144,7 @@ def points(message):
 # add one point /ap dominik
 @bot.message_handler(commands=['addpoints', 'ap'])
 def add_points(message):
-    if permissions[4] or message.from_user.id == game_master:
+    if permissions >= 1 or message.from_user.id == game_master:
         parts = message.text.split(' ')
         if len(parts) < 2 or len(parts) > 3:
             bot.reply_to(message, "Invalid command: no player name")
@@ -171,7 +169,7 @@ def add_points(message):
 
 @bot.message_handler(commands=['removepoints', 'rp'])
 def remove_points(message):
-    if permissions[5] or message.from_user.id == game_master:
+    if permissions == 2 or message.from_user.id == game_master:
         parts = message.text.split(' ')
         if len(parts) < 2 or len(parts) > 3:
             bot.reply_to(message, "Invalid command: no player name")
@@ -196,7 +194,7 @@ def remove_points(message):
 
 @bot.message_handler(commands=['deletescore', 'dp'])
 def delete_score(message):
-    if message.from_user.id == game_master:
+    if permissions == 2 or message.from_user.id == game_master:
         parts = message.text.split(' ')
         if len(parts) != 2:
             bot.reply_to(message, "Invalid command: no player name")
@@ -214,36 +212,32 @@ def delete_score(message):
 
 @bot.message_handler(commands=['map'])
 def post_map(message):
-    if permissions[6] or message.from_user.id == game_master:
+    if permissions == 2 or message.from_user.id == game_master:
         bot.send_message(message.chat.id, f"Map {current_map_level}: {maps[current_map_level]}")
         logger.info(f"Message send: Map {current_map_level}: {maps[current_map_level]}")
 
 
-# set permissions for /config, /poi, /respawn, /points, /addpoints, /removepoints, /map, /permissions
-# /permissions 0 0 0 0 0 0 0 0
+# permission levels: 0 game master only; 1 poi, respawn, addpoints for players; 2 unrestriced
 @bot.message_handler(commands=['permissions'])
 def change_permissions(message):
-    if permissions[7] or message.from_user.id == game_master:
+    global permissions
+    if permissions == 2 or message.from_user.id == game_master:
         try:
-            if len(message.text.split(' ')) != 9:
-                return bot.reply_to(message, "set permissions for /config, /poi, /respawn, /points, /addpoints,"
-                                             " /removepoints, /map, /permissions\nexample: /permissions 0 0 0 0 0 0 0 0")
-
+            command = message.text.split(' ')
+            if len(command) != 2:
+                bot.reply_to(message, "Invalid permissions")
+                logger.info(f"Invalid permissions: {message}")
+                return
             else:
-                print(message.text.split(' '))
-                for i in range(1, 9):
-                    permissions[i - 1] = bool(int(message.text.split(' ')[i]))
-                logger.info(f"Permissions set to: {permissions}")
-                permission_icons = ['✔️' if permissions[i] else '❌' for i in range(8)]
-                permission_string = "\n".join([f"{commands[i]} {permission_icons[i]}" for i in range(8)])
-                return bot.reply_to(message, f"Permissions set to:\n{permission_string}")
+                permissions = int(command[1])
+                return bot.reply_to(message, f"Permissions set to: {permissions}")
         except ValueError:
             return bot.reply_to(message, "Invalid permissions")
 
 
 @bot.message_handler(commands=['reset'])
 def reset(message):
-    if message.from_user.id == game_master:
+    if permissions == 2 or message.from_user.id == game_master:
         global scores
         scores = {}
         global current_map_level
@@ -265,7 +259,7 @@ def reset(message):
 # Command to set a new timer
 @bot.message_handler(commands=['timer'])
 def set_timer(message):
-    if message.from_user.id == game_master:
+    if permissions == 2 or message.from_user.id == game_master:
         try:
             command = message.text.split()
             if len(command) >= 3:  # /timer name duration [map] [config]
@@ -330,7 +324,7 @@ def timer_function(bot_timer: BotTimer):
 
 @bot.message_handler(commands=['play'])
 def play_game(message):
-    if message.from_user.id == game_master:
+    if permissions == 2 or message.from_user.id == game_master:
         # read in command[1]
         command = message.text.split(' ')
         if len(command) == 2:
@@ -404,7 +398,7 @@ def create_timers_from_file(filename, user_id):
 
 @bot.message_handler(commands=['pause'])
 def pause_game(message):
-    if message.from_user.id == game_master:
+    if permissions == 2 or message.from_user.id == game_master:
         # pause all timers
         for timer in timers:
             timer.pause()
@@ -414,7 +408,7 @@ def pause_game(message):
 
 @bot.message_handler(commands=['resume'])
 def pause_game(message):
-    if message.from_user.id == game_master:
+    if permissions == 2 or message.from_user.id == game_master:
         # resume all timers
         for timer in timers:
             timer.resume()
