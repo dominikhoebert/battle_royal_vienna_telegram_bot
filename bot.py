@@ -221,6 +221,8 @@ def reset(message):
         global maps
         maps = read_maps()
         global timers
+        for timer in timers:
+            timer.pause()
         timers = []
 
         logger.info("Full reset: scores, map level, pois, maps, timers")
@@ -367,11 +369,26 @@ def create_timers_from_file(filename, user_id):
         return first_timer.create_bot_timer()
 
 
+# TODO test
 @bot.message_handler(commands=['pause'])
 def pause_game(message):
     if message.from_user.id == game_master:
         # pause all timers
-        ...
+        for timer in timers:
+            timer.pause()
+        bot.send_message(message.chat.id, "Game paused")
+        logger.info("Game paused. All timers paused")
+
+
+# TODO test
+@bot.message_handler(commands=['resume'])
+def pause_game(message):
+    if message.from_user.id == game_master:
+        # pause all timers
+        for timer in timers:
+            timer.resume()
+        bot.send_message(message.chat.id, "Game resumed")
+        logger.info("Game resumed. All timers resumed")
 
 
 bot.infinity_polling()

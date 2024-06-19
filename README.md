@@ -46,3 +46,4 @@ Intended to play a game of "Battle Royal" in Vienna.
 - https://pytba.readthedocs.io/en/latest/sync_version/index.html#telebot.TeleBot.send_location
 - update /start
 - update /permissions
+- help

@@ -2,7 +2,6 @@ from threading import Timer
 from time import time
 
 
-# TODO str, repr
 class BotTimer:
     def __init__(self, name: str, interval: int, user_id: int, function, message: str = None, map: bool = False,
                  config: int = None, next_prepared_timer=None):
@@ -45,7 +44,6 @@ class BotTimer:
         return str(self)
 
 
-# TODO str, repr
 class PreparedTimer:
     def __init__(self, name: str, interval: int, user_id: int, function, message: str = None, map: bool = False,
                  config: int = None):
