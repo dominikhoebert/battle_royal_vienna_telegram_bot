@@ -12,6 +12,7 @@ Intended to play a game of "Battle Royal".
 - `/config map-level` - Set the map level (1-5; 1 is the biggest)
 - `/config` - Get the map level
 - `/poi` - Send a random Point of Interest for the current map level
+- `/deletepoi` - Opens a dialog to delete a Point of Interest
 - `/respawn` - Send a random Point of Interest to respawn at
 - `/score` - Send the score table
 - `/timer name minutes command` - Creates a timer with a name and for a certain number of minutes and run
@@ -55,4 +56,5 @@ docker run -v ./data:/bot/data battle_royal_vienna_telegram_bot python3 lat_long
 - ~~update /start~~
 - ~~update /permissions~~
 - ~~help~~
-- add delete poi dialog
+- ~~add delete poi dialog~~
+- add menu

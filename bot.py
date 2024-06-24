@@ -1,6 +1,7 @@
 import json
 # https://github.com/eternnoir/pyTelegramBotAPI
 import telebot  # pip install pyTelegramBotAPI
+from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 from loguru import logger
 import csv
 import os
@@ -38,6 +39,7 @@ def read_maps():
 
 
 pois = read_poi()
+active_poi = {}
 maps = read_maps()
 secrets = read_secrets()
 bot = telebot.TeleBot(secrets['bot_token'], parse_mode='HTML')
@@ -113,12 +115,16 @@ def poi(message):
     if permissions >= 1 or message.from_user.id == game_master:
         poi_choice = pois.get_random_poi(current_map_level)
         logger.info(f"POI: {poi_choice.map}, {poi_choice.title}, {poi_choice.url}")
-        bot.send_message(message.chat.id, f"New POI: {poi_choice.title}\n"
-                                          f"{poi_choice.url}\n"
-                                          f"Take a Selfie for a Point! 📸")
+        message_ids = []
+        m = bot.send_message(message.chat.id, f"New POI: {poi_choice.title}\n"
+                                              f"{poi_choice.url}\n"
+                                              f"Take a Selfie for a Point! 📸")
+        message_ids.append(m.message_id)
         if poi_choice.lat is not None:
-            bot.send_venue(message.chat.id, poi_choice.lat, poi_choice.long, title=poi_choice.title,
-                           address=poi_choice.address)
+            m = bot.send_venue(message.chat.id, poi_choice.lat, poi_choice.long, title=poi_choice.title,
+                               address=poi_choice.address)
+            message_ids.append(m.message_id)
+        active_poi[len(active_poi) + 1] = {"poi": poi_choice, "message_ids": message_ids}
 
 
 @bot.message_handler(commands=['respawn'])
@@ -254,6 +260,9 @@ def reset(message):
         for timer in timers:
             timer.pause()
         timers = []
+
+        global active_poi
+        active_poi = {}
 
         logger.info("Full reset: scores, map level, pois, maps, timers")
         bot.reply_to(message, f"Full reset: scores, map level, pois, maps, timers")
@@ -417,6 +426,35 @@ def pause_game(message):
             timer.resume()
         bot.send_message(message.chat.id, "Game resumed")
         logger.info("Game resumed. All timers resumed")
+
+
+def gen_markup():
+    markup = InlineKeyboardMarkup()
+    markup.row_width = 1
+    for i, v in active_poi.items():
+        markup.add(InlineKeyboardButton(text=v["poi"].title, callback_data=i))
+    markup.add(InlineKeyboardButton(text="Cancel", callback_data=-1))
+    return markup
+
+
+@bot.callback_query_handler(func=lambda call: True)
+def callback_query(call):
+    if permissions == 2 or call.from_user.id == game_master:
+        if call.data == "-1":
+            bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.message_id)
+            return
+        else:
+            bot.delete_messages(chat_id=call.message.chat.id, message_ids=active_poi[int(call.data)]["message_ids"])
+            del active_poi[int(call.data)]
+            bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
+                                  text="Delete Active POI:", reply_markup=gen_markup())
+            logger.info(f"Delete Active POI: {call.data}")
+
+
+@bot.message_handler(commands=['deletepoi', 'dpoi'])
+def message_handler(message):
+    if permissions == 2 or message.from_user.id == game_master:
+        bot.send_message(message.chat.id, "Delete Active POI:", reply_markup=gen_markup())
 
 
 bot.infinity_polling()
