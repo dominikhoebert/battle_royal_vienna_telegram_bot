@@ -116,6 +116,9 @@ def poi(message):
         bot.send_message(message.chat.id, f"New POI: {poi_choice.title}\n"
                                           f"{poi_choice.url}\n"
                                           f"Take a Selfie for a Point! 📸")
+        if poi_choice.lat is not None:
+            bot.send_venue(message.chat.id, poi_choice.lat, poi_choice.long, title=poi_choice.title,
+                           address=poi_choice.address)
 
 
 @bot.message_handler(commands=['respawn'])

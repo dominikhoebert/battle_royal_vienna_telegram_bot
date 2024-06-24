@@ -18,6 +18,9 @@ class POI:
     map: int
     url: str
     comment: str
+    lat: float = None
+    long: float = None
+    address: str = None
     last_used: datetime = datetime.now()
 
     def __str__(self):
@@ -51,7 +54,7 @@ class POIs:
         current_time = datetime.now()
         pois = self.get_pois_by_level(map_level)
         ages = [(current_time - poi.last_used).total_seconds() for poi in pois.pois]
-        weights = [age / sum(ages) for age in ages] #[::-1]
+        weights = [age / sum(ages) for age in ages]  # [::-1]
         choice = random.choices(pois.pois, weights=weights, k=1)
         choice[0].last_used = current_time
         return choice[0]
@@ -62,8 +65,15 @@ def read_pois(filename) -> POIs:
     pois = POIs()
     for row in reader:
         try:
-            pois.pois.append(POI(row['title'], int(row['map']), row['url'], row['comment']))
-            # pois.pois.append(POI(row['title'], int(row['map']), row['url'], row['comment'], random_timestamp())) # For testing
+            lat = float(row['lat'])
+            long = float(row['lng'])
+            address = row['address']
+        except ValueError:
+            lat = None
+            long = None
+            address = None
+        try:
+            pois.pois.append(POI(row['title'], int(row['map']), row['url'], row['comment'], lat, long, address))
         except ValueError:
             print(f"Error reading {row} ({row['map']} not a number); skipping")
             continue
