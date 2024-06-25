@@ -1,0 +1,17 @@
+start - See all commands
+help - See all commands and description
+config - Get/Set the map level (1-5; 1 is the biggest)
+poi - Send a random Point of Interest for the current map level
+deletepoi - Opens a dialog to delete a Point of Interest
+respawn - Send a random Point of Interest to respawn at
+score - Send the score table
+timer - Creates a timer with a name and for a certain number of minutes and run commands (map or config)
+addpoints - Add points to a player for the score table
+removepoints - Remove points from a player for the score table
+deletescore - Remove Player from Score Table
+map - Send the current map
+permissions - Set the permissions for the commands (0 game master only; 1 poi, respawn, addpoints for players, 2 unrestriced)
+reset - Reset the game (map_level, cooldowns, points table)
+play - Start a game using a .yaml gameplan
+pause - Pause all timers
+resume - Resume all timers

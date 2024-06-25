@@ -57,4 +57,5 @@ docker run -v ./data:/bot/data battle_royal_vienna_telegram_bot python3 lat_long
 - ~~update /permissions~~
 - ~~help~~
 - ~~add delete poi dialog~~
-- add menu
+- ~~add menu~~
+- prevent adding double poi
